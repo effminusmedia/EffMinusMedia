@@ -1,0 +1,52 @@
+<!doctype html>
+<html lang="en" data-treatment="mono">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="theme-color" content="#080808" />
+    <meta name="description" content="EFF MINUS — Photo • Video • Creative" />
+    <title>EFF MINUS — Photo • Video • Creative</title>
+    <link rel="stylesheet" href="styles.css" />
+  </head>
+  <body>
+    <main class="hero">
+      <header class="topbar" aria-label="Eff Minus">
+        <a class="wordmark" href="#home" aria-label="Eff Minus home">
+          <!-- Cropped from the primary black-and-white lockup in the supplied brand board. -->
+          <img src="eff-minus-primary-mark.png" alt="EFF MINUS" />
+        </a>
+      </header>
+
+      <section class="video-stage" id="home" aria-label="Eff Minus montage video">
+        <!-- Add the montage at assets/eff-minus-hero.mp4. Keep muted, autoplay, loop, and playsinline. -->
+        <video class="hero__video" autoplay muted loop playsinline aria-hidden="true" poster="">
+          <!-- <source src="assets/eff-minus-hero.mp4" type="video/mp4" /> -->
+        </video>
+        <div class="hero__shade" aria-hidden="true"></div>
+
+        <div class="hero__content" aria-label="Eff Minus social links and services">
+          <nav class="socials" aria-label="Social media">
+            <a href="https://www.instagram.com/eff.minus" target="_blank" rel="noopener noreferrer">Instagram <span aria-hidden="true">↗</span></a>
+            <a href="https://www.tiktok.com/@eff.minus" target="_blank" rel="noopener noreferrer">TikTok <span aria-hidden="true">↗</span></a>
+          </nav>
+          <div class="bottom-row">
+            <p class="eyebrow">Photo <span>•</span> Video <span>•</span> Creative</p>
+            <div class="contact-block">
+              <a class="contact-trigger" href="mailto:effminusmedia@gmail.com">Contact Us</a>
+              <div class="contact-details">
+                <a href="tel:+15086887398">508-688-7398</a>
+                <a href="mailto:effminusmedia@gmail.com">effminusmedia@gmail.com</a>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+    </main>
+    <script>
+      const params = new URLSearchParams(location.search);
+      if (params.get('variant') === 'red' || params.get('variant') === 'b') {
+        document.documentElement.dataset.treatment = 'red';
+      }
+    </script>
+  </body>
+</html>
