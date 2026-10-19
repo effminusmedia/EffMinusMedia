@@ -54,6 +54,8 @@ html[data-treatment="red"] .socials a:hover { color: var(--accent); }
   .hero { padding: 40px 5.2vw 0; }
   .wordmark img { width: 190px; }
   .video-stage { margin: 0 -5.2vw; padding: 40px 5.2vw 34px; }
+  .hero__content { width: 100%; max-width: none; }
+  .bottom-row { width: 100%; }
   .eyebrow { margin-top: 29px; font-size: 12px; }
   .socials { gap: 30px; }
   .socials a { font-size: 26px; }
