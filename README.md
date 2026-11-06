@@ -11,6 +11,6 @@ The page uses `eff-minus-primary-mark.png` beside `index.html`, taken from the p
 
 The browser-tab icon is `favicon.ico` (with `favicon.png` as the 64 px source). Keep both beside `index.html` when uploading the site.
 
-The black video stage starts directly below the logo and fills the remaining viewport. Social links sit above the service line at the bottom of that stage. The bottom-right “Contact Us” link opens email; small clickable phone and email details sit directly underneath it. When the montage is ready, put it at `assets/eff-minus-hero.mp4` and uncomment the `<source>` line in `index.html`.
+The black video stage starts directly below the logo and fills the remaining viewport. A blank Tic Tac Toe board gates the homepage: the visitor plays X, and the cooperative bot plays O without blocking an available X win. If a sequence no longer permits an X win, the bot forfeits and lets the visitor in. On the homepage, social links sit above the service line and the bottom-right “Contact Us” link opens email; small clickable phone and email details sit directly underneath it. When the montage is ready, put it at `assets/eff-minus-hero.mp4` and uncomment the `<source>` line in `index.html`.
 
 This is deliberately a small static foundation. New pages can share `styles.css` and the common header/contact conventions as the site grows.
