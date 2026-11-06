@@ -30,6 +30,16 @@ a { color: inherit; text-decoration: none; }
 .hero__video, .hero__shade { position: absolute; z-index: -1; inset: 0; width: 100%; height: 100%; }
 .hero__video { object-fit: cover; background: #080808; }
 .hero__shade { background: rgba(0,0,0,.18); }
+.entry-game { position: relative; z-index: 1; display: flex; width: 100%; flex: 1; flex-direction: column; align-items: center; justify-content: center; padding: 32px 0 52px; text-align: center; }
+.entry-game__label { margin: 0 0 9px; color: var(--fg); font-size: 12px; font-weight: 400; letter-spacing: .22em; text-transform: uppercase; }
+.entry-game__status { min-height: 1.5em; margin: 0 0 24px; color: var(--muted); font-size: 12px; letter-spacing: .06em; }
+.game-board { display: grid; width: min(288px, 78vw); aspect-ratio: 1; grid-template-columns: repeat(3, minmax(0, 1fr)); border-top: 1px solid var(--line); border-left: 1px solid var(--line); }
+.game-cell { display: grid; min-width: 0; place-items: center; border: 0; border-right: 1px solid var(--line); border-bottom: 1px solid var(--line); border-radius: 0; color: var(--fg); background: transparent; font: 400 clamp(36px, 7vw, 52px)/1 "Helvetica Neue", Helvetica, Arial, sans-serif; }
+.game-cell:not(:disabled) { cursor: pointer; }
+.game-cell:not(:disabled):hover, .game-cell:not(:disabled):focus-visible { background: rgba(244,243,241,.06); outline: 1px solid var(--fg); outline-offset: -3px; }
+.game-cell.is-bot { color: var(--muted); }
+.game-cell.is-winning { color: var(--accent); }
+.entry-game[hidden], .hero__content[hidden] { display: none !important; }
 .hero__content { width: min(100%, 650px); margin: auto 0 0; }
 .bottom-row { display: flex; align-items: flex-end; justify-content: space-between; gap: 12px; }
 .eyebrow { margin: 25px 0 0; color: var(--muted); font-size: 11px; letter-spacing: .2em; text-transform: uppercase; }
@@ -46,7 +56,8 @@ a { color: inherit; text-decoration: none; }
 .contact-details a:hover { color: var(--accent); }
 html[data-treatment="red"] { --accent: #e3342f; --line: rgba(227, 52, 47, .7); }
 html[data-treatment="red"] .eyebrow span,
-html[data-treatment="red"] .socials a span { color: var(--accent); }
+html[data-treatment="red"] .socials a span,
+html[data-treatment="red"] .game-cell.is-winning { color: var(--accent); }
 html[data-treatment="red"] .contact-list a:hover,
 html[data-treatment="red"] .socials a:hover { color: var(--accent); }
 
@@ -55,6 +66,10 @@ html[data-treatment="red"] .socials a:hover { color: var(--accent); }
   .wordmark img { width: 190px; }
   .video-stage { margin: 0 -5.2vw; padding: 40px 5.2vw 34px; }
   .hero__content { width: 100%; max-width: none; }
+  .game-board { width: 320px; }
+  .entry-game { padding: 42px 0 64px; }
+  .entry-game__label { font-size: 13px; }
+  .entry-game__status { font-size: 13px; }
   .bottom-row { width: 100%; }
   .eyebrow { margin-top: 29px; font-size: 12px; }
   .socials { gap: 30px; }
