@@ -26,7 +26,23 @@
         </video>
         <div class="hero__shade" aria-hidden="true"></div>
 
-        <div class="hero__content" aria-label="Eff Minus social links and services">
+        <section class="entry-game" id="entry-game" aria-label="Eff Minus Tic Tac Toe entry game">
+          <p class="entry-game__label">Tic Tac Toe</p>
+          <p class="entry-game__status" id="entry-game-status" aria-live="polite">You’re X. Make three in a row.</p>
+          <div class="game-board" id="game-board" role="group" aria-label="Tic Tac Toe board">
+            <button class="game-cell" type="button" data-cell="0" aria-label="Empty square, row 1, column 1"></button>
+            <button class="game-cell" type="button" data-cell="1" aria-label="Empty square, row 1, column 2"></button>
+            <button class="game-cell" type="button" data-cell="2" aria-label="Empty square, row 1, column 3"></button>
+            <button class="game-cell" type="button" data-cell="3" aria-label="Empty square, row 2, column 1"></button>
+            <button class="game-cell" type="button" data-cell="4" aria-label="Empty square, row 2, column 2"></button>
+            <button class="game-cell" type="button" data-cell="5" aria-label="Empty square, row 2, column 3"></button>
+            <button class="game-cell" type="button" data-cell="6" aria-label="Empty square, row 3, column 1"></button>
+            <button class="game-cell" type="button" data-cell="7" aria-label="Empty square, row 3, column 2"></button>
+            <button class="game-cell" type="button" data-cell="8" aria-label="Empty square, row 3, column 3"></button>
+          </div>
+        </section>
+
+        <div class="hero__content" id="home-content" aria-label="Eff Minus social links and services" hidden>
           <nav class="socials" aria-label="Social media">
             <a href="https://www.instagram.com/eff.minus" target="_blank" rel="noopener noreferrer">Instagram <span aria-hidden="true">↗</span></a>
             <a href="https://www.tiktok.com/@eff.minus" target="_blank" rel="noopener noreferrer">TikTok <span aria-hidden="true">↗</span></a>
@@ -45,10 +61,148 @@
       </section>
     </main>
     <script>
-      const params = new URLSearchParams(location.search);
-      if (params.get('variant') === 'red' || params.get('variant') === 'b') {
-        document.documentElement.dataset.treatment = 'red';
-      }
+      (() => {
+        const params = new URLSearchParams(location.search);
+        if (params.get('variant') === 'red' || params.get('variant') === 'b') {
+          document.documentElement.dataset.treatment = 'red';
+        }
+
+        const lines = [
+          [0, 1, 2], [3, 4, 5], [6, 7, 8],
+          [0, 3, 6], [1, 4, 7], [2, 5, 8],
+          [0, 4, 8], [2, 4, 6]
+        ];
+        const board = Array(9).fill('');
+        const cells = Array.from(document.querySelectorAll('.game-cell'));
+        const game = document.getElementById('entry-game');
+        const home = document.getElementById('home-content');
+        const status = document.getElementById('entry-game-status');
+        let busy = false;
+        let ended = false;
+        const memo = new Map();
+
+        function winningLine(state, mark) {
+          return lines.find(line => line.every(index => state[index] === mark)) || null;
+        }
+
+        function winningMoves(state, mark) {
+          return state.flatMap((value, index) => {
+            if (value) return [];
+            const next = state.slice();
+            next[index] = mark;
+            return winningLine(next, mark) ? [index] : [];
+          });
+        }
+
+        // This search checks that the bot can keep at least one cooperative route to an X win.
+        function guestCanWin(state, turn) {
+          if (winningLine(state, 'X')) return true;
+          if (winningLine(state, 'O') || state.every(Boolean)) return false;
+          const key = `${state.join('')}:${turn}`;
+          if (memo.has(key)) return memo.get(key);
+
+          const possible = state.some((value, index) => {
+            if (value) return false;
+            const next = state.slice();
+            next[index] = turn;
+            if (turn === 'O' && winningLine(next, 'O')) return false;
+            return guestCanWin(next, turn === 'X' ? 'O' : 'X');
+          });
+          memo.set(key, possible);
+          return possible;
+        }
+
+        function openLineScore(state) {
+          return lines.reduce((score, line) => {
+            const marks = line.map(index => state[index]);
+            if (marks.includes('O')) return score;
+            const xCount = marks.filter(mark => mark === 'X').length;
+            return score + (xCount === 2 ? 120 : xCount === 1 ? 12 : 1);
+          }, 0);
+        }
+
+        function chooseBotMove() {
+          const immediateGuestWins = winningMoves(board, 'X');
+          const candidates = board.flatMap((value, index) => {
+            if (value || immediateGuestWins.includes(index)) return [];
+            const next = board.slice();
+            next[index] = 'O';
+            if (winningLine(next, 'O') || !guestCanWin(next, 'X')) return [];
+            return [{ index, state: next }];
+          });
+
+          if (!candidates.length) return null;
+          const scored = candidates.map(candidate => ({
+            ...candidate,
+            score: winningMoves(candidate.state, 'X').length * 1000 + openLineScore(candidate.state)
+          }));
+          const bestScore = Math.max(...scored.map(candidate => candidate.score));
+          const best = scored.filter(candidate => candidate.score === bestScore);
+          return best[Math.floor(Math.random() * best.length)].index;
+        }
+
+        function drawBoard(winningCells = []) {
+          cells.forEach((cell, index) => {
+            const mark = board[index];
+            cell.textContent = mark;
+            cell.classList.toggle('is-bot', mark === 'O');
+            cell.classList.toggle('is-winning', winningCells.includes(index));
+            const row = Math.floor(index / 3) + 1;
+            const column = (index % 3) + 1;
+            cell.setAttribute('aria-label', `${mark || 'Empty'} square, row ${row}, column ${column}`);
+            cell.disabled = Boolean(mark) || ended;
+          });
+        }
+
+        function welcome(message, line = []) {
+          ended = true;
+          busy = true;
+          drawBoard(line);
+          status.textContent = message;
+          window.setTimeout(() => {
+            game.hidden = true;
+            home.hidden = false;
+            document.querySelector('.video-stage').setAttribute('aria-label', 'Eff Minus home');
+            home.querySelector('.socials a').focus();
+          }, 700);
+        }
+
+        function botForfeit() {
+          welcome('The bot forfeits. Welcome to Eff Minus.');
+        }
+
+        cells.forEach(cell => {
+          cell.addEventListener('click', () => {
+            if (busy || ended || board[Number(cell.dataset.cell)]) return;
+            const playerIndex = Number(cell.dataset.cell);
+            board[playerIndex] = 'X';
+            const playerWin = winningLine(board, 'X');
+            drawBoard(playerWin || []);
+            if (playerWin) {
+              welcome('You win. Welcome to Eff Minus.', playerWin);
+              return;
+            }
+            if (board.every(Boolean)) {
+              botForfeit();
+              return;
+            }
+
+            busy = true;
+            status.textContent = 'The bot is making its move.';
+            window.setTimeout(() => {
+              const botIndex = chooseBotMove();
+              if (botIndex === null) {
+                botForfeit();
+                return;
+              }
+              board[botIndex] = 'O';
+              drawBoard();
+              busy = false;
+              status.textContent = 'Your move as X.';
+            }, 260);
+          });
+        });
+      })();
     </script>
   </body>
 </html>
