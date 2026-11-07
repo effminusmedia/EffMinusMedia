@@ -8,7 +8,7 @@
     <title>EFF MINUS — Photo • Video • Creative</title>
     <link rel="icon" href="favicon.ico" sizes="any" />
     <link rel="icon" type="image/png" sizes="64x64" href="favicon.png" />
-    <link rel="stylesheet" href="styles.css" />
+    <link rel="stylesheet" href="styles.css?v=mobile-playback" />
   </head>
   <body>
     <main class="hero">
@@ -17,10 +17,11 @@
           <!-- Cropped from the primary black-and-white lockup in the supplied brand board. -->
           <img src="eff-minus-primary-mark.png" alt="EFF MINUS" />
         </a>
+        <button class="hero__play" type="button" hidden>Play background video</button>
       </header>
 
       <section class="video-stage" id="home" aria-label="Eff Minus montage video">
-        <video class="hero__video" autoplay muted loop playsinline aria-hidden="true" preload="none"></video>
+        <video class="hero__video" muted loop playsinline aria-hidden="true" preload="none"></video>
         <div class="hero__shade" aria-hidden="true"></div>
 
         <section class="entry-game" id="entry-game" aria-label="Eff Minus Tic Tac Toe entry game">
@@ -60,19 +61,45 @@
     <script>
       (() => {
         const video = document.querySelector('.hero__video');
-        const mobileMotion = matchMedia('(width < 760px) and (prefers-reduced-motion: no-preference)');
+        const playButton = document.querySelector('.hero__play');
+        const mobile = matchMedia('(max-width: 759px)');
+        const reducedMotion = matchMedia('(prefers-reduced-motion: reduce)');
+
+        function playVideo() {
+          video.defaultMuted = true;
+          video.muted = true;
+          if (!video.hasAttribute('src')) {
+            video.src = 'assets/eff-minus-v4-compatible.mp4';
+          }
+          video.play().catch(() => {
+            if (mobile.matches && video.paused && !video.error) playButton.hidden = false;
+          });
+        }
 
         function syncVideo() {
-          if (mobileMotion.matches) {
-            video.src = 'assets/eff_minus_splash_v4_mobile.mp4';
-          } else if (video.hasAttribute('src')) {
+          if (mobile.matches) {
+            video.poster = 'assets/eff-minus-v4-poster.jpg';
+            if (!reducedMotion.matches) {
+              playVideo();
+              return;
+            }
+          } else {
+            video.removeAttribute('poster');
+          }
+
+          if (video.hasAttribute('src')) {
             video.pause();
             video.removeAttribute('src');
             video.load();
           }
+          playButton.hidden = !mobile.matches;
         }
 
-        mobileMotion.addEventListener('change', syncVideo);
+        playButton.addEventListener('click', playVideo);
+        video.addEventListener('playing', () => { playButton.hidden = true; });
+        video.addEventListener('error', () => { playButton.hidden = true; });
+        mobile.addEventListener('change', syncVideo);
+        reducedMotion.addEventListener('change', syncVideo);
         syncVideo();
 
         const params = new URLSearchParams(location.search);

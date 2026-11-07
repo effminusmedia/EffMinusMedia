@@ -82,7 +82,9 @@ html[data-treatment="red"] .socials a:hover { color: var(--accent); }
   *, *::before, *::after { scroll-behavior: auto !important; transition-duration: .01ms !important; }
 }
 
-@media (width < 760px) {
+.hero__play { display: none; }
+
+@media (max-width: 759px) {
   .hero {
     --muted: #f4f3f1;
     --line: rgba(244, 243, 241, .58);
@@ -96,6 +98,21 @@ html[data-treatment="red"] .socials a:hover { color: var(--accent); }
   }
 
   .hero__video, .hero__shade { pointer-events: none; }
+
+  .hero__play:not([hidden]) {
+    display: inline-flex;
+    align-items: center;
+    min-height: 44px;
+    margin-left: auto;
+    padding: 0 12px;
+    border: 1px solid var(--line);
+    border-radius: 4px;
+    color: var(--fg);
+    background: rgba(0,0,0,.65);
+    font: inherit;
+    font-size: 12px;
+    cursor: pointer;
+  }
 
   .hero__shade {
     background: linear-gradient(rgba(0,0,0,.62), rgba(0,0,0,.58) 55%, rgba(0,0,0,.77));
