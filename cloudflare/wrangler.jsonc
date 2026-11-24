@@ -10,6 +10,13 @@
   "send_email": [
     { "name": "INQUIRY_EMAIL", "destination_address": "effminusmedia@gmail.com" }
   ],
+  "d1_databases": [
+    {
+      "binding": "CONTACTS",
+      "database_name": "eff-minus-contacts",
+      "database_id": "b9c4b18e-0fd1-4929-90c2-f0c3e15346c6"
+    }
+  ],
   "ratelimits": [
     { "name": "INQUIRY_LIMIT", "namespace_id": "731294", "simple": { "limit": 5, "period": 60 } }
   ]
