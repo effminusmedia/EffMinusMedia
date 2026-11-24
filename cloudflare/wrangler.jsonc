@@ -1,0 +1,17 @@
+{
+  "name": "eff-minus-inquiry",
+  "main": "inquiry.mjs",
+  "compatibility_date": "2026-11-24",
+  "workers_dev": false,
+  "preview_urls": false,
+  "routes": [
+    { "pattern": "effminusmedia.com/api/inquiry", "zone_name": "effminusmedia.com" },
+    { "pattern": "www.effminusmedia.com/api/inquiry", "zone_name": "effminusmedia.com" }
+  ],
+  "send_email": [
+    { "name": "INQUIRY_EMAIL", "destination_address": "effminusmedia@gmail.com" }
+  ],
+  "ratelimits": [
+    { "name": "INQUIRY_LIMIT", "namespace_id": "731294", "simple": { "limit": 5, "period": 60 } }
+  ]
+}
