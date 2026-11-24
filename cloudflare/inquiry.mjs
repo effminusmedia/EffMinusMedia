@@ -64,6 +64,16 @@ export default {
       const { success } = await env.INQUIRY_LIMIT.limit({ key: ip });
       if (!success) return respond('Too many attempts. Wait a minute, then try again.', 429);
 
+      await env.CONTACTS.prepare(`
+        INSERT INTO contacts (email, first_name, last_name, phone)
+        VALUES (?, ?, ?, ?)
+        ON CONFLICT(email) DO UPDATE SET
+          first_name = excluded.first_name,
+          last_name = excluded.last_name,
+          phone = excluded.phone,
+          last_inquiry_at = excluded.last_inquiry_at
+      `).bind(email, first, last, phone).run();
+
       await env.INQUIRY_EMAIL.send({
         from: sender,
         to: inbox,
