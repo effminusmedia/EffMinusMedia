@@ -1,5 +1,5 @@
 const inbox = 'effminusmedia@gmail.com';
-const sender = 'inquiries@effminusmedia.com';
+const sender = 'inquiries@notify.effminusmedia.com';
 
 function respond(message, status = 200) {
   return Response.json({ message }, {
