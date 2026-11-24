@@ -1,0 +1,133 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="theme-color" content="#080808" />
+    <meta name="description" content="Tell Eff Minus Media about your photo, video, or creative project." />
+    <title>Inquire Here | Eff Minus Media</title>
+    <link rel="icon" href="favicon.ico" sizes="any" />
+    <link rel="stylesheet" href="styles.css?v=inquiry" />
+    <style>
+      .inquiry { width: min(100% - 40px, 640px); margin: 0 auto; padding: 28px 0 56px; }
+      .inquiry header { display: flex; align-items: center; justify-content: space-between; gap: 16px; }
+      .inquiry a:not(.wordmark) { text-decoration: underline; text-underline-offset: 4px; }
+      .inquiry h1 { margin: 34px 0 24px; font-size: clamp(2rem, 7vw, 3.5rem); font-weight: 500; letter-spacing: -.04em; }
+      .inquiry form, .inquiry label { display: grid; gap: 8px; }
+      .inquiry form { gap: 20px; }
+      .inquiry label { min-width: 0; font-size: .9375rem; }
+      .inquiry-row { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 16px; }
+      .inquiry input, .inquiry textarea {
+        width: 100%; min-width: 0; min-height: 46px; padding: 10px 12px;
+        border: 1px solid #626262; border-radius: 4px; background: #161616; color: inherit; font: inherit; font-size: 1rem;
+      }
+      .inquiry textarea { min-height: 120px; resize: vertical; }
+      .inquiry :focus-visible { outline: 2px solid var(--fg); outline-offset: 3px; }
+      .inquiry fieldset { min-width: 0; margin: 0; padding: 0; border: 0; }
+      .inquiry legend { padding: 0; margin-bottom: 6px; font-weight: 600; }
+      .inquiry-help { margin: 0 0 12px; color: #bdbdbd; font-size: .9375rem; }
+      .inquiry button {
+        justify-self: start; min-height: 46px; padding: 10px 20px; border: 0; border-radius: 4px;
+        background: var(--fg); color: var(--bg); font: inherit; font-weight: 600; cursor: pointer;
+      }
+      @media (max-width: 480px) {
+        .inquiry-row { grid-template-columns: minmax(0, 1fr); }
+        .inquiry button { justify-self: stretch; }
+      }
+    </style>
+  </head>
+  <body>
+    <main class="inquiry">
+      <header>
+        <a class="wordmark" href="index.html" aria-label="Eff Minus home">
+          <img src="eff-minus-primary-mark.png" alt="EFF MINUS" />
+        </a>
+        <a href="index.html">Back to home</a>
+      </header>
+
+      <h1>Inquire Here</h1>
+      <form action="/api/inquiry" method="post">
+        <div hidden>
+          <label>Leave this field blank <input name="website" tabindex="-1" autocomplete="off" /></label>
+        </div>
+
+        <div class="inquiry-row">
+          <label>First name
+            <input name="First name" autocomplete="given-name" maxlength="100" required />
+          </label>
+          <label>Last name
+            <input name="Last name" autocomplete="family-name" maxlength="100" required />
+          </label>
+        </div>
+
+        <div class="inquiry-row">
+          <label>Phone number
+            <input type="tel" name="Phone number" autocomplete="tel" maxlength="50" required />
+          </label>
+          <label>Email
+            <input type="email" name="email" autocomplete="email" maxlength="254" required />
+          </label>
+        </div>
+
+        <label>Brief project description
+          <textarea name="Project description" rows="5" maxlength="3000" required></textarea>
+        </label>
+
+        <fieldset aria-describedby="date-help">
+          <legend>Project timing (optional)</legend>
+          <p class="inquiry-help" id="date-help">Choose a start date. Add an end date if you have a range in mind.</p>
+          <div class="inquiry-row">
+            <label>Start date
+              <input type="date" name="Start date" id="start-date" />
+            </label>
+            <label>End date
+              <input type="date" name="End date" id="end-date" />
+            </label>
+          </div>
+        </fieldset>
+
+        <button type="submit">Send inquiry</button>
+        <div id="inquiry-status" role="status"></div>
+        <noscript>For direct email, use <a href="mailto:effminusmedia@gmail.com">effminusmedia@gmail.com</a>.</noscript>
+      </form>
+    </main>
+    <script>
+      const form = document.querySelector('form');
+      const status = document.getElementById('inquiry-status');
+      const button = form.querySelector('button');
+      const start = document.getElementById('start-date');
+      const end = document.getElementById('end-date');
+
+      function syncDates() {
+        start.required = Boolean(end.value);
+        end.min = start.value;
+      }
+
+      start.addEventListener('input', syncDates);
+      end.addEventListener('input', syncDates);
+      window.addEventListener('pageshow', syncDates);
+
+      form.addEventListener('submit', async event => {
+        event.preventDefault();
+        button.disabled = true;
+        status.textContent = 'Sending inquiry…';
+        try {
+          const response = await fetch(form.action, {
+            method: 'POST',
+            body: new URLSearchParams(new FormData(form))
+          });
+          const { message } = await response.json();
+          status.textContent = message;
+          if (response.ok) {
+            form.reset();
+            syncDates();
+          }
+        } catch {
+          status.textContent = 'Your inquiry could not be sent. Try again or email effminusmedia@gmail.com directly.';
+        } finally {
+          button.disabled = false;
+        }
+      });
+    </script>
+  </body>
+</html>
