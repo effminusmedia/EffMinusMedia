@@ -1,10 +1,14 @@
 const inbox = 'effminusmedia@gmail.com';
 const sender = 'inquiries@notify.effminusmedia.com';
 
-function respond(message, status = 200) {
+const allowedOrigins = new Set(['https://effminusmedia.com', 'https://www.effminusmedia.com']);
+
+function responseFor(origin, message, status = 200) {
+  const headers = { 'Cache-Control': 'no-store', Vary: 'Origin' };
+  if (allowedOrigins.has(origin)) headers['Access-Control-Allow-Origin'] = origin;
   return Response.json({ message }, {
     status,
-    headers: { 'Cache-Control': 'no-store' },
+    headers,
   });
 }
 
@@ -17,9 +21,11 @@ function validDate(value) {
 export default {
   async fetch(request, env) {
     const url = new URL(request.url);
+    const origin = request.headers.get('Origin');
+    const respond = (message, status) => responseFor(origin, message, status);
     if (url.pathname !== '/api/inquiry') return respond('Page unavailable.', 404);
     if (request.method !== 'POST') return respond('Use the inquiry form to submit a project.', 405);
-    if (request.headers.get('Origin') !== url.origin) return respond('Open the inquiry page to submit the form.', 403);
+    if (!allowedOrigins.has(origin)) return respond('Open the inquiry page to submit the form.', 403);
     if (request.headers.get('Content-Type')?.split(';')[0] !== 'application/x-www-form-urlencoded') {
       return respond('Use the inquiry form to submit a project.', 415);
     }
