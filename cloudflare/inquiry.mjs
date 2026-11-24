@@ -36,6 +36,10 @@ export default {
     const field = name => (form.get(name) ?? '').trim();
     if (field('website')) return respond('Inquiry sent. Thanks for reaching out.');
 
+    if (field('communicationsConsent') !== 'yes') {
+      return respond('Please agree to receive communications from Eff Minus LLC.', 400);
+    }
+
     const first = field('First name');
     const last = field('Last name');
     const phone = field('Phone number');
@@ -70,6 +74,8 @@ export default {
           `Phone: ${phone}`,
           `Email: ${email}`,
           `Project timing: ${end ? `${start} to ${end}` : start || 'Flexible'}`,
+          '',
+          'Communications consent: Yes',
           '',
           'Project description',
           description,
